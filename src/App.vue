@@ -13,7 +13,13 @@ export default defineComponent({
 </script>
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Orbitron');
+@import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro');
+
+@media all and (display-mode: fullscreen) {
+  html {
+    cursor: none;
+  }
+}
 
 html, body, #app, .app-container {
   height: 100%;
