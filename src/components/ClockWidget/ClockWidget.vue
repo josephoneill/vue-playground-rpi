@@ -1,5 +1,5 @@
 <template>
-  <div class="clock" :style="clockCssVars">
+  <div class="clock-widget" :style="clockWidgetCssVars">
     <p>{{ currentTime }}</p>
   </div>
 </template>
@@ -33,7 +33,7 @@ export default defineComponent({
 
     onMounted(updateTime);
     
-    const clockCssVars = computed(() => {
+    const clockWidgetCssVars = computed(() => {
       return {
         '--font-size': fontSize.value,
         '--font-color': fontColor.value,
@@ -43,16 +43,21 @@ export default defineComponent({
     return {
       currentTime,
       updateTime,
-      clockCssVars
+      clockWidgetCssVars
     };
   }
 });
 </script>
 
 <style scoped>
-.clock {
+.clock-widget {
   font-size: var(--font-size);
   color: var(--font-color);
-  font-family: 'Orbitron';
+  font-family: 'Source Code Pro';
+  font-variant-numeric: tabular-nums;
+}
+
+p {
+  margin: 0;
 }
 </style>
