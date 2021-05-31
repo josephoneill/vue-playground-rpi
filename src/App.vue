@@ -8,12 +8,14 @@
 import { defineComponent } from 'vue';
 
 export default defineComponent({
-  name: 'App',
+  name: 'App'
 });
 </script>
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP');
+@import url('https://fonts.googleapis.com/css2?family=Oxygen');
 
 @media all and (display-mode: fullscreen) {
   html {

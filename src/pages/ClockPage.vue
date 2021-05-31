@@ -1,5 +1,5 @@
 <template>
-  <div class="clock-widget-container" :style="clockCssVars" @click="updateColorInputPosition($event, 'bg')">
+  <div class="clock-page clock-widget-container" :style="clockCssVars" @click="updateColorInputPosition($event, 'bg')">
     <ColorInput v-model:color="bgColor" :positionX="bgColorPos.x" :positionY="bgColorPos.y" />
     <ColorInput v-model:color="fontColor" :positionX="clockColorPos.x" :positionY="clockColorPos.y" />
     <ClockWidget class="clock" :fontColor="fontColor" fontSize="20vmin" @click="updateColorInputPosition($event, 'clock')" />
@@ -11,10 +11,10 @@ import { ref, computed } from 'vue';
 import { ClockWidget, ColorInput } from '@/components';
 
 export default {
-  name: "Clock",
+  name: "ClockPage",
   components: { ClockWidget, ColorInput },
   setup() {
-    const fontColor = ref('#000000');
+    const fontColor = ref('#ffffff');
     const bgColor = ref('#2c3e50');
 
     const clockColorPos = ref({x: 0, y: 0});

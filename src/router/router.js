@@ -1,5 +1,5 @@
 import { createWebHistory, createRouter } from 'vue-router';
-import Clock from '@/pages/Clock.vue';
+import { ClockPage, SpotifyPage, SpotifyAuthCallback } from '@/pages';
 
 const history = createWebHistory();
 const router = createRouter({
@@ -7,7 +7,15 @@ const router = createRouter({
   routes: [
     {
       path: '/clock',
-      component: Clock,
+      component: ClockPage,
+    },
+    {
+      path: '/spotify',
+      component: SpotifyPage
+    },
+    {
+      path: '/spotifyauthcallback',
+      component: SpotifyAuthCallback
     }
   ]
 });
