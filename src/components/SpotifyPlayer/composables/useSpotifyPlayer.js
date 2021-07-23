@@ -1,5 +1,4 @@
-
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 
 export default function useSpotifyPlayer(store, isPlaying, lastPlayPauseClickTime) {
   const spotifyAPIHandler = computed(() => store.state.spotifyAPIHandler);
