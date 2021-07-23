@@ -31,7 +31,7 @@ export class SpotifyAuthenticator {
     const authWindow = window.open(url);
   }
 
-  async requestSpotifyToken(code) {
+  async requestSpotifyAccessToken(code) {
     const body = new URLSearchParams();
     body.append('client_id', import.meta.env.VITE_SPOTIFY_CLIENT_ID);
     body.append('grant_type', 'authorization_code');
@@ -51,6 +51,26 @@ export class SpotifyAuthenticator {
       return Promise.reject(error);
     }
     
+    return data;
+  }
+
+  async refreshAccessToken(refreshToken) {
+    const body = new URLSearchParams();
+    body.append('client_id', import.meta.env.VITE_SPOTIFY_CLIENT_ID);
+    body.append('grant_type', 'refresh_token');
+    body.append('refresh_token', refreshToken);
+    const options = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: body.toString()
+    };
+    
+    const response = await fetch('https://accounts.spotify.com/api/token', options);
+    const data = await response.json();
+    if (!response.ok) {
+      const error = (data && data.message) || response.status;
+      return Promise.reject(error);
+    }
     return data;
   }
 }
