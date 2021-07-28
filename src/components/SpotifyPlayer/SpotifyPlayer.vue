@@ -4,10 +4,16 @@
       <img class="img-album-art" ref="imgAlbumArt" :src="albumImageSrc" @load="onAlbumArtLoaded" />
     </div>
     <div class="spotify-player--details">
-      <p id="spotify-player__song-title">{{ songTitle }}</p>
-      <p id="spotify-player__artist-title">{{ artistTitle }}</p>
+      <div class="spotify-player__song-info">
+        <p id="spotify-player__song-title">{{ songTitle }}</p>
+        <p id="spotify-player__artist-title">{{ artistTitle }}</p>
+      </div>
       <div class="spotify-player__controls">
-        <Slider v-model="songProgress" :dark="useDarkColors" :min="0" :max="songLength" />
+        <div class="flex-row flex-al-c spotify-player__controls__seekbar">
+          <p class="mr-8">{{ formattedSongProgress }}</p>
+          <Slider v-model="songProgress" :dark="useDarkColors" :min="0" :max="songLength" @onChange="seekTo" @input="onSongSliderInput" />
+          <p class="ml-8">{{ formattedSongLength }}</p>
+        </div>
         <div class="spotify-player__controls__buttons">
           <img class="spotify-player__button" :src="previousButton" @click="playPrevious()" />
           <img class="spotify-player__button" id="spotify-player__button--playpause" :src="playPauseButton" @click="playPauseSpotify()">
@@ -21,7 +27,7 @@
 <script>
 import { Slider } from '@/components';
 import { useSpotifySongData, useSpotifyPlayer, useSpotifyStyling } from './composables'
-import { defineComponent, onMounted, toRefs, computed, ref } from 'vue';
+import { defineComponent, onMounted, ref } from 'vue';
 import { bindGestureHandler } from '@/utils/gestureHandler';
 import { useStore } from 'vuex'
 
@@ -40,15 +46,16 @@ export default defineComponent({
     }
   },
   setup(props) {
+    // Define variables that need to be passed into the composables
     const store = useStore();
-    let isPlaying = ref(false);
+    const isPlaying = ref(false);
     const lastPlayPauseClickTime = ref(performance.now());
     const spotifyPlayer = ref(null);
 
-    const { spotifyAPIHandler, playPauseSpotify, playNext, playPrevious } = useSpotifyPlayer(store, isPlaying, lastPlayPauseClickTime);
+    const { spotifyAPIHandler, playPauseSpotify, playNext, playPrevious, seekTo, onSongSliderInput, songSeekbarInMovement } = useSpotifyPlayer(store, isPlaying, lastPlayPauseClickTime);
     const { imgAlbumArt, onAlbumArtLoaded, titleTextColor, sliderColor, useDarkColors, spotifyPlayerCssVars } = useSpotifyStyling(isPlaying);
-    const useSpotifySongDataObject = useSpotifySongData(spotifyAPIHandler, isPlaying, lastPlayPauseClickTime, useDarkColors);
-    const { songTitle, artistTitle, albumImageSrc, songLength, songProgress, playPauseText, getCurrentPlayingData, playPauseButton, nextButton, previousButton } = useSpotifySongDataObject;
+    const useSpotifySongDataObject = useSpotifySongData(spotifyAPIHandler, isPlaying, lastPlayPauseClickTime, songSeekbarInMovement, useDarkColors);
+    const { songTitle, artistTitle, albumImageSrc, songLength, formattedSongLength, songProgress, formattedSongProgress, playPauseText, getCurrentPlayingData, playPauseButton, nextButton, previousButton } = useSpotifySongDataObject;
 
     onMounted(() => { 
       bindGestureHandler(spotifyPlayer.value, (gestureDirection) => {
@@ -72,13 +79,18 @@ export default defineComponent({
       artistTitle,
       albumImageSrc,
       songLength,
+      formattedSongLength,
       songProgress,
+      formattedSongProgress,
       playPauseSpotify,
       playPauseText,
       getCurrentPlayingData,
       playPauseButton,
       playNext,
       playPrevious,
+      seekTo,
+      onSongSliderInput,
+      songSeekbarInMovement,
       imgAlbumArt,
       onAlbumArtLoaded,
       titleTextColor,
@@ -124,6 +136,9 @@ export default defineComponent({
   display: flex;
   flex-direction: column;
 }
+.spotify-player__controls__seekbar > div {
+  flex-grow: 1;
+}
 .spotify-player__controls__buttons {
   margin-top: 16px;
   display: flex;
@@ -139,9 +154,28 @@ export default defineComponent({
 #spotify-player__button--playpause {
   height: 96px;
 }
+.spotify-player__song-info > p {
+  margin: 0px 0px 8px 0px;
+}
+
 p {
   font-family: 'Noto Sans JP';
   color: var(--player-text-color);
-  margin: 0px 0px 8px 0px;
+}
+
+.spotify-player__button {
+  filter: brightness(var(--player-button-brightness));
+  -webkit-filter: brightness(var(--player-button-brightness));
+  transition: filter ease-in-out 0.1s;
+  transition: transform ease-in-out 0.1s;
+}
+
+.spotify-player__button:hover {
+  filter: brightness(var(--player-button-brightness--hover));;
+  -webkit-filter: brightness(var(--player-button-brightness--hover));
+}
+
+.spotify-player__button:active {
+  transform: scale(0.9);
 }
 </style>

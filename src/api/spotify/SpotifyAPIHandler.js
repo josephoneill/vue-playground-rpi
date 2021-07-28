@@ -48,4 +48,11 @@ export class SpotifyAPIHandler {
     const response = await fetch(`${basePlayerUrl}previous`, options);
     return response
   }
+
+  async seekTo(position) {
+    const options = this.getAPIOptions('PUT');
+
+    const response = await fetch(`${basePlayerUrl}seek?position_ms=${position}`, options);
+    return response
+  }
 }

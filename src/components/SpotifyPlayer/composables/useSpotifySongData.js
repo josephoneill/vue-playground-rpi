@@ -1,23 +1,18 @@
 import { ref, onMounted, computed } from 'vue'
+import { msToFormattedTime } from '@/utils/timeUtils';
 
-import playButtonLight from '@/assets/spotify_player/play_circle_light.png';
-import playButtonDark from '@/assets/spotify_player/play_circle_dark.png';
+import playButtonImg from '@/assets/spotify_player/play_circle_light.png';
+import pauseButtonImg from '@/assets/spotify_player/pause_circle_light.png';
+import nextButtonImg from '@/assets/spotify_player/next_light.png';
+import previousButtonImg from '@/assets/spotify_player/prev_light.png';
 
-import pauseButtonLight from '@/assets/spotify_player/pause_circle_light.png';
-import pauseButtonDark from '@/assets/spotify_player/pause_circle_dark.png';
-
-import nextButtonLight from '@/assets/spotify_player/next_light.png';
-import nextButtonDark from '@/assets/spotify_player/next_dark.png';
-
-import previousButtonLight from '@/assets/spotify_player/prev_light.png';
-import previousButtonDark from '@/assets/spotify_player/prev_dark.png';
-
-export default function useSpotifySongData(spotifyAPIHandler, isPlaying, lastPlayPauseClickTime, useDarkColors) {
+export default function useSpotifySongData(spotifyAPIHandler, isPlaying, lastPlayPauseClickTime, songSeekbarInMovement, useDarkColors) {
   const songTitle = ref('');
   const artistTitle = ref('');
   const albumImageSrc = ref('');
   const playPauseText = computed(() => isPlaying.value ? 'Pause' : 'Play');
   const songLength = ref(0);
+  const formattedSongLength = ref('');
   const songProgress = ref(0);
 
   const getCurrentPlayingData = () => {
@@ -29,7 +24,13 @@ export default function useSpotifySongData(spotifyAPIHandler, isPlaying, lastPla
         artistTitle.value = data.item.artists[0].name;
         albumImageSrc.value = data.item.album.images[0].url;
         songLength.value = Math.round((data.item.duration_ms / 1000) * 10) / 10;
-        songProgress.value = Math.round((data.progress_ms / 1000) * 10) / 10;
+
+        // Don't update the song progress if the seekbar is currently being dragged
+        if (!songSeekbarInMovement.value) {
+          songProgress.value = Math.round((data.progress_ms / 1000) * 10) / 10;
+        }
+        
+        formattedSongLength.value = msToFormattedTime(data.item.duration_ms);
 
         if (performance.now() - lastPlayPauseClickTime.value > 1000) {
           isPlaying.value = data['is_playing'];
@@ -39,20 +40,20 @@ export default function useSpotifySongData(spotifyAPIHandler, isPlaying, lastPla
     }, 1000);
   };
 
+  const formattedSongProgress = computed(() => {
+    return msToFormattedTime(songProgress.value * 1000);
+  });
+
   const previousButton = computed(() => {
-    return useDarkColors.value ? previousButtonDark : previousButtonLight;
+    return previousButtonImg;
   });
 
   const playPauseButton = computed(() => {
-    if (isPlaying.value) {
-      return useDarkColors.value ? pauseButtonDark : pauseButtonLight;
-    } else {
-      return useDarkColors.value ? playButtonDark : playButtonLight;
-    }
+    return isPlaying.value ? pauseButtonImg: playButtonImg;
   });
 
   const nextButton = computed(() => {
-    return useDarkColors.value ? nextButtonDark : nextButtonLight;
+    return nextButtonImg;
   });
 
   onMounted(getCurrentPlayingData);
@@ -62,12 +63,14 @@ export default function useSpotifySongData(spotifyAPIHandler, isPlaying, lastPla
     artistTitle,
     albumImageSrc,
     songLength,
+    formattedSongLength,
     songProgress,
+    formattedSongProgress,
     isPlaying,
-    getCurrentPlayingData,
     playPauseText,
     playPauseButton,
     previousButton,
-    nextButton
+    nextButton,
+    getCurrentPlayingData
   }
 }

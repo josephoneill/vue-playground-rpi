@@ -1,13 +1,23 @@
 <template>
   <div class="slider" :style="sliderCssVars">
-    <input type="range" :value="modelValue" name="slider" :min="min" :max="max" @input="onInput" @touchstart="stopPropagation" @touchend="stopPropagation">
+    <input
+      type="range"
+      :value="modelValue"
+      name="slider"
+      :min="min"
+      :max="max"
+      @input="onInput"
+      @touchstart="stopPropagation"
+      @touchend="stopPropagation"
+      @change="$emit('onChange', modelValue)"
+    >
     <div class="slider-ghost-track" aria-hidden="true" />
   </div>
 </template>
 
 <script>
 import { defineComponent, onMounted, toRefs, computed, ref } from 'vue';
-import { hexToRgb, rgbLinearShade } from '@/utils/colorUtils';
+import { rgbLinearShade } from '@/utils/colorUtils';
 
 export default defineComponent({
   name: 'Slider',
@@ -40,6 +50,7 @@ export default defineComponent({
 
     const onInput = (event) => {
       emit('update:modelValue', event.target.valueAsNumber);
+      emit('onInput', event);
     };
 
     const stopPropagation = () => event.stopPropagation();
@@ -79,6 +90,7 @@ export default defineComponent({
   width: var(--track-width);
   top: 18px;
   background: var(--filled-track-color);
+  pointer-events: none;
 }
 input[type=range] {
   -webkit-appearance: none;
