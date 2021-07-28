@@ -4,7 +4,8 @@ import { SpotifyAuthenticator, SpotifyAPIHandler } from '@/api/spotify';
 export default function useSpotifyAuth(store) {
 	const spotifyAuthenticator = computed({
 		get: () => {
-			return store.state.spotifyAuthenticator ?? new SpotifyAuthenticator();
+			const spotifyAuthenticator = store.state.spotifyAuthenticator;
+			return spotifyAuthenticator ? spotifyAuthenticator : new SpotifyAuthenticator();
 		},
 		set: (value) => store.commit('setState', {
 			key: 'spotifyAuthenticator',
